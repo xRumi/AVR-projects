@@ -3,7 +3,6 @@
 #include <avr/interrupt.h>
 #include <avr/sleep.h>
 #include <stdint.h>
-#include <stdlib.h>
 #include <string.h>
 
 #define F_CPU 8000000UL
@@ -36,10 +35,17 @@ ISR(TIMER1_COMPA_vect) {
     }
     count++;
 }
-static inline void print(const char* str) {
+void print(const char* str) {
     for (uint8_t i = 0; str[i]; i++) {
-        while (TCCR1) sleep_mode();
+        while (TCCR1);
         tx = str[i];
+        TCCR1 = 0b10000110;
+    }
+}
+void printByteArray(const uint8_t* arr, uint8_t n) {
+    for (uint8_t i = 0; i < n; i++) {
+        while (TCCR1);
+        tx = arr[i];
         TCCR1 = 0b10000110;
     }
 }
@@ -51,13 +57,13 @@ uint32_t micros() {
     cli();
     ovfs = timer0_ovf_count;
     t = TCNT0;
-    if (TIFR & _BV(OCF0A)) ovfs++;
+    if (TIFR & _BV(TOV0)) ovfs++;
     sei();
 
     return (ovfs << 8) + t;
 }
 
-static inline void ioint(void) {
+void ioint(void) {
     TIMSK = _BV(TOIE0) | _BV(OCIE1A);
 
     // timer0
@@ -76,15 +82,15 @@ static inline void ioint(void) {
     PORTB |= DHT11 | TX; // pull high, defaults
 }
 
-static inline uint8_t dht11_readBit() {
+uint8_t dht11_readBit() {
     while (!DHT11_INPUT); // pull high
     uint32_t ticks = micros();
     while (DHT11_INPUT); // finish
-    if (micros() - ticks <= 65) return 0;
+    if (micros() - ticks <= 50) return 0;
     return 1;
 }
 
-static char* padByteStr(char* str) {
+char* padByteStr(char* str) {
     uint8_t len = strlen(str);
     uint8_t shift = 8 - len;
     for (int8_t i = len - 1; i >= 0; i--) {
@@ -117,29 +123,29 @@ void dht11() {
     }
 
     DDRB |= DHT11; // mcu to sensor output
+    PORTB |= DHT11; // pull high
 
-    char numberStr[10];
-    print(padByteStr(itoa(data[0], numberStr, 2)));
-    print(".");
-    print(padByteStr(itoa(data[1], numberStr, 2)));
-    print("\n");
-    print(padByteStr(itoa(data[2], numberStr, 2)));
-    print(".");
-    print(padByteStr(itoa(data[3], numberStr, 2)));
-    print("\n");
-    print(padByteStr(itoa(data[4], numberStr, 2)));
-    print("\n");
+    // Debug
+    // char numberStr[10];
+    // print(padByteStr(itoa(data[0], numberStr, 2)));
+    // print(".");
+    // print(padByteStr(itoa(data[1], numberStr, 2)));
+    // print("\n");
+    // print(padByteStr(itoa(data[2], numberStr, 2)));
+    // print(".");
+    // print(padByteStr(itoa(data[3], numberStr, 2)));
+    // print("\n");
+    // print(padByteStr(itoa(data[4], numberStr, 2)));
+    // print("\n");
 
-    if ((uint8_t)(data[0] + data[1] + data[2] + data[3]) == data[4] && data[1] == 0 && data[3] == 0) {
+    uint8_t checksum = data[0] + data[1] + data[2] + data[3];
+
+    if (checksum == data[4] && checksum != 0) {
         PORTB ^= LED;
-        print("Humidity = ");
-        print(itoa(data[0], numberStr, 10));
-        print("\n");
-        print("Temperature = ");
-        print(itoa(data[2], numberStr, 10));
     }
-    print("\n");
-    print("\n");
+
+    // Send sensor data
+    printByteArray(data, 5);
 }
 
 int main() {
@@ -148,7 +154,7 @@ int main() {
 
     for(;;) {
         dht11();
-        _delay_ms(2000);
+        _delay_ms(1000);
     }
     return 0;
 }
