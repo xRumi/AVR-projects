@@ -25,6 +25,7 @@ ISR(TIMER1_COMPA_vect) {
         PORTB &= ~TX; // send start bit, 0
     } else if (count == 9) {
         PORTB |= TX; // send stop bit, 1
+    } else if (count == 10) {
         count = 0xFF;
         TCCR1 = 0; // stop timer1
     } else {
@@ -136,6 +137,7 @@ void dht11() {
     // print(padByteStr(itoa(data[3], numberStr, 2)));
     // print("\n");
     // print(padByteStr(itoa(data[4], numberStr, 2)));
+    // print("\n");
     // print("\n");
 
     uint8_t checksum = data[0] + data[1] + data[2] + data[3];
