@@ -32,5 +32,9 @@ sudo pacman -S avr-gcc avr-libc avrdude make
 cd project_name
 make
 make upload
-make clean      # clean build
+make clean
 ```
+|<img src="./LED Blink ASM/circuit_label.jpg" height="256">|<img src="./Hello World Bit Bang ASM/pictures/circuit_label.jpg" height="256">|
+|:-:|:-:|
+|<img src="./DHT11 Sensor C/pictures/circuit_label.jpg" height="256">|<img src="./Echo Bit Bang ASM/pictures/circuit_label.jpg" height="256">|
+|<img src="./DHT11 Sensor C/pictures/cutecom.png" width="256">|<img src="./Echo Bit Bang ASM/pictures/cutecom.png" width="300">|
