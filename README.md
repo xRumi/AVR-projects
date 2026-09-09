@@ -18,9 +18,9 @@ A collection of standalone AVR projects written for ATtiny45 in Assembly and C. 
 5. DHT11 sensor
 
 ## Toolchain
-1. **avr-gcc**, **avr-binutils**, **avr-libc** (Compiler & Library)
-2. **avrdude** (Flashing)
-3. **make** (Build System)
+1. avr-gcc, avr-binutils, avr-libc
+2. avrdude
+3. make
 
 ### Arch Linux
 ```bash
@@ -32,9 +32,8 @@ sudo pacman -S avr-gcc avr-libc avrdude make
 cd project_name
 make
 make upload
-make clean
 ```
-|<img src="./LED Blink ASM/circuit_label.jpg" height="256">|<img src="./Hello World Bit Bang ASM/pictures/circuit_label.jpg" height="256">|
+|<img src="./Hello World Bit Bang ASM/pictures/circuit_label.jpg" height="256">||
 |:-:|:-:|
 |<img src="./DHT11 Sensor C/pictures/circuit_label.jpg" height="256">|<img src="./Echo Bit Bang ASM/pictures/circuit_label.jpg" height="256">|
 |<img src="./DHT11 Sensor C/pictures/cutecom.png" width="256">|<img src="./Echo Bit Bang ASM/pictures/cutecom.png" width="300">|
